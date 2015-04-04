@@ -80,8 +80,9 @@ module BreadcrumbsOnRails
 
       def render
         @elements.collect do |element|
-          render_element(element)
-        end.join(@options[:separator] || " &raquo; ")
+          separator = element.separator || @options[:separator] || " &raquo; ".html_safe
+          [render_element(element), separator]
+        end.flatten[0..-2].join
       end
 
       def render_element(element)
@@ -110,6 +111,8 @@ module BreadcrumbsOnRails
       attr_accessor :path
       # @return [Hash] The element/link URL.
       attr_accessor :options
+      # @return [String] The separator that follows element
+      attr_accessor :separator
 
       # Initializes the Element with given parameters.
       #
@@ -122,6 +125,7 @@ module BreadcrumbsOnRails
         self.name     = name
         self.path     = path
         self.options  = options
+        self.separator = options.delete(:separator)
       end
     end
 
